@@ -1,0 +1,155 @@
+package pieChart;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.Month;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import javafx.application.Application;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.scene.Scene;
+import javafx.scene.chart.BarChart;
+import javafx.scene.chart.CategoryAxis;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.PieChart;
+import javafx.scene.chart.XYChart;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.stage.Stage;
+
+public class Main extends Application {
+	@Override
+	public void start(Stage primaryStage) {
+		try {
+			BorderPane root = new BorderPane();
+			Scene scene = new Scene(root, 400, 400);
+			HBox hBox = new HBox();
+			root.setTop(hBox);
+			Map<String, Integer> contentOfFile = getContentOfPieChartFile();
+			ObservableList<PieChart.Data> pieChartData = FXCollections.observableArrayList();
+			for (Entry<String, Integer> entry : contentOfFile.entrySet()) {
+
+				pieChartData.add(new PieChart.Data(entry.getKey(), entry.getValue()));
+			}
+			final CategoryAxis xAxis = new CategoryAxis();
+			final NumberAxis yAxis = new NumberAxis();
+			xAxis.setLabel("Spieltag");
+			yAxis.setLabel("Verein");
+			LineChart<String, Number> lineChart = new LineChart<>(xAxis, yAxis); // initialisierung Line
+
+			Map<String, List<Integer>> contentOfLineChart = getContentOfLineChartFile();
+			for (Entry<String, List<Integer>> entry : contentOfLineChart.entrySet()) {
+				XYChart.Series<String, Number> line = new XYChart.Series<>();
+				line.setName(entry.getKey());
+				for (int i = 0; i < entry.getValue().size(); i++) {
+					line.getData().add(new XYChart.Data<String, Number>("" + i + 1, entry.getValue().get(i)));
+				}
+
+				lineChart.getData().add(line);
+			}
+			final CategoryAxis xAxis_Strom = new CategoryAxis();
+			final NumberAxis yAxis_Strom = new NumberAxis();
+			xAxis_Strom.setLabel("Monat");
+			yAxis_Strom.setLabel("Verbrauch");
+			BarChart<String, Number> barChart = new BarChart<>(xAxis_Strom, yAxis_Strom); // initialisierung BarChart
+
+			Map<String, List<Double>> contentOfBarChart = getContentOfBarChartFile();
+			for (Entry<String, List<Double>> entry : contentOfBarChart.entrySet()) {
+				XYChart.Series<String, Number> bar = new XYChart.Series<>();
+				bar.setName(entry.getKey());
+				for (Month month : Month.values()) {
+					int indexofMonth = month.getValue() - 1;
+					bar.getData().add(new XYChart.Data<String, Number>("" + month, entry.getValue().get(indexofMonth)));
+				}
+
+				barChart.getData().add(bar);
+			}
+
+			PieChart pieChart = new PieChart(pieChartData); // initialisierung pie
+
+			hBox.getChildren().add(pieChart);
+			hBox.getChildren().add(lineChart);
+			hBox.getChildren().add(barChart);
+
+			primaryStage.setScene(scene);
+			primaryStage.show();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	private static Map<String, Integer> getContentOfPieChartFile() throws IOException {
+		Path pathToFile = Paths.get("res\\PieChartData.txt");
+		BufferedReader reader = Files.newBufferedReader(pathToFile);
+		HashMap<String, Integer> contentOfFile = new HashMap<>();
+		String nextLine;
+		while ((nextLine = reader.readLine()) != null) {
+			String[] values = nextLine.split(", ");
+			contentOfFile.put(values[0], Integer.valueOf(values[1]));
+
+		}
+		return contentOfFile;
+	}
+
+	private static Map<String, List<Integer>> getContentOfLineChartFile() throws IOException {
+		Path pathToFile = Paths.get("res\\LineChartData.txt");
+		BufferedReader reader = Files.newBufferedReader(pathToFile);
+		HashMap<String, List<Integer>> contentOfFile = new HashMap<>();
+		String nextLine;
+		while ((nextLine = reader.readLine()) != null) {
+			List<Integer> daylist = new ArrayList<Integer>();
+			String[] values = nextLine.split(", ");
+			daylist.add(Integer.valueOf(values[1]));
+			daylist.add(Integer.valueOf(values[2]));
+			daylist.add(Integer.valueOf(values[3]));
+			daylist.add(Integer.valueOf(values[4]));
+
+			contentOfFile.put(values[0], daylist);
+
+		}
+		System.out.println(contentOfFile);
+		return contentOfFile;
+
+	}
+
+	private static Map<String, List<Double>> getContentOfBarChartFile() throws IOException {
+		Path pathToFile = Paths.get("res\\BarChartData.txt");
+		BufferedReader reader = Files.newBufferedReader(pathToFile);
+		HashMap<String, List<Double>> contentOfFile = new HashMap<>();
+		String nextLine;
+		while ((nextLine = reader.readLine()) != null) {
+			List<Double> strom = new ArrayList<Double>();
+			String[] values = nextLine.split(", ");
+			strom.add(Double.valueOf(values[1]));
+			strom.add(Double.valueOf(values[2]));
+			strom.add(Double.valueOf(values[3]));
+			strom.add(Double.valueOf(values[4]));
+			strom.add(Double.valueOf(values[5]));
+			strom.add(Double.valueOf(values[6]));
+			strom.add(Double.valueOf(values[7]));
+			strom.add(Double.valueOf(values[8]));
+			strom.add(Double.valueOf(values[9]));
+			strom.add(Double.valueOf(values[10]));
+			strom.add(Double.valueOf(values[11]));
+			strom.add(Double.valueOf(values[12]));
+			contentOfFile.put(values[0], strom);
+
+		}
+		System.out.println(contentOfFile);
+		return contentOfFile;
+
+	}
+
+	public static void main(String[] args) {
+		launch(args);
+	}
+}
