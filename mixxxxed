@@ -1,0 +1,160 @@
+/////// HASH MAP ///////
+public static void main(String[] args) {
+ Map<String, Integer> age = new HashMap<>(); 
+age.put("Max", 45); 
+age.put("Anna", 24); 
+age.get("Max");
+}
+
+
+//////// HASH SET ///////
+public static void main(String[] args) {
+ Set<Integer> set = new HashSet<>(); 
+set.add(1); 
+set.add(2); 
+set.contains(3); 
+set.remove(1); 
+}
+
+////// ARRAY LISTE ////////
+public static void main(String[] args) {
+ List<String> list = new ArrayList<>(); 
+list.add("Fakultät73"); 
+list.add(0, "Hallo"); 
+list.remove(1); 
+}
+
+////// TRY CATCH /////////
+public static void main(String[] args) {
+ BufferedReader reader = null; 
+try { 
+ reader = Files.newBufferedReader(Paths.get("F73.txt")); 
+ String line = reader.readLine(); 
+ } catch (IOException e) { 
+ e.printStackTrace(); 
+ } 
+launch(args); 
+} 
+
+/////// TRY CATCH MEHRERE //////////
+public static void main(String[] args) {
+try { 
+ String[] wordArray = new String[5]; 
+ System.out.println(wordArray[3].substring(2)); 
+ wordArray[10] = "Hallo"; 
+ } catch(NullPointerException e) { 
+ System.out.println("Ungültiger Null-Zugriff!"); 
+ } catch(ArrayIndexOutOfBoundsException e) { 
+ System.out.println("Zugriff auf ungültigen Feldindex!"); 
+ } 
+}
+
+///// EXCEPTION SELBER BAUEN //////
+public class FakultaetException extends Exception {
+private static final long serialVersionUID= 2314980106850022834L; 
+public FakultaetException(String message) { 
+ super(message); 
+ } 
+} 
+
+////// JAVA FX LABEL MIT GRAFIK UND TEXT /////// 
+Label label = new Label();
+InputStream input = getClass().getResourceAsStream( 
+"/labelicon/f73_logo.jpg");
+Image logo = new Image(input);
+label.setGraphic(new ImageView(logo));
+label.setText("Fakultät 73");
+label.setContentDisplay(ContentDisplay.TOP);
+
+////// JAVA FX BUTTON ohne alles //////
+Pane pane = new Pane();
+Button button = new Button("Button");
+pane.getChildren().add(button);
+
+/////// PROMPT TEXT ///////
+Pane pane = new Pane();
+TextField textField = new TextField();
+pane.getChildren().add(textField);
+textField.setPromptText("Prompttext");
+
+////// combo box //////
+Pane pane = new Pane();
+ComboBox<String> comboBox = new ComboBox<>();
+comboBox.getItems().add("Element 1");
+comboBox.getItems().add("Element 2");
+comboBox.getItems().add("Element 3");
+pane.getChildren().add(comboBox);
+
+/////// mini event handler //////
+Label label = new Label(); 
+Button button = new Button("Drück mich!");
+button.setOnAction(new EventHandler<ActionEvent>() {
+ @Override
+ public void handle(ActionEvent event) {
+ label.setText("Der Button wurde gedrückt!");
+ }
+});
+
+////// MINI observable list ///////
+ObservableList<String> items = 
+ FXCollections.observableArrayList ("Apple", "Banana");
+ListView<String> list = new ListView<>(items);
+
+
+////// MINI PIE CHART //////
+ObservableList<PieChart.Data> pieChartData = 
+ FXCollections.observableArrayList();
+pieChartData.add(new PieChart.Data("Spongebob", 12.6)); 
+pieChartData.add(new PieChart.Data("Sesamstraße", 17.4));
+pieChartData.add(new PieChart.Data("Benjamin Blümchen", 20.0));
+pieChartData.add(new PieChart.Data("Teletubbies", 5.8));
+pieChartData.add(new PieChart.Data("Pumuckel", 12.2));
+pieChartData.add(new PieChart.Data("Tabaluga", 32.0));
+PieChart pieChart = new PieChart(pieChartData);
+
+////// FUNCTIONAL INTERFACE ÜBER LISTE ITERIEREN ///////
+public static void main(String[] args) {
+ List<String> list = Arrays.asList("first", "second", "third"); 
+for (String element : list) { 
+ System.out.println(element); 
+ } 
+ 
+list.forEach(new Consumer<String>() { // Functional Interface
+ public void accept(String element) { 
+ System.out.println(element); 
+ } 
+ }); 
+} 
+
+////// LAMBDA BUTTON EINZEILER //////////
+Button button = new Button();
+button.setOnAction(event -> System.out.println("Button pressed"));
+
+
+
+
+
+///// Anbindung Datenbank  ////
+try { 
+ /* Step One: Loading the driver */
+ Class.forName("org.h2.Driver"); 
+} catch (ClassNotFoundException e) { 
+ System.err.println("Es wurde kein passender Treiber gefunden!"); 
+ e.printStackTrace(); 
+} 
+///////Anbindung Datenbank Connection //////
+Connection connection = null; 
+try { 
+ /* Step two: Establishing the connection to the database */
+ connection = DriverManager.getConnection("jdbc:h2:~/DBAnbindung/Datenbank", 
+ "user", "password"); 
+} catch (SQLException e) { 
+ System.err.println("Es konnte keine Verbindung zur Datenbank hergestell t"
+ + " werden!"); 
+ e.printStackTrace(); 
+}
+ ////////
+
+
+
+
