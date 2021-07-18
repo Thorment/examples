@@ -25,4 +25,19 @@ try(BufferedWriter bufferedWriter =
     bufferedWriter.write("Hello World");
 
 }
+// FIle Reader ////////////////////////////
+blablaa
 
+
+// Action Event Handler  ///////////////////////
+		centerBtn.setOnAction(new EventHandler<ActionEvent>() {
+
+			@Override
+			public void handle(ActionEvent event) {
+				System.out.println("jetzt passiert etwas");
+				primaryStage.setScene(scene2);
+			}
+		});
+	
+	
+	
