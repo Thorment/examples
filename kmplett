@@ -1,0 +1,225 @@
+package controller;
+
+import model.Person;
+
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Iterator;
+import javafx.application.Application;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.geometry.Insets;
+import javafx.scene.Group;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableColumn.CellEditEvent;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
+import javafx.stage.Stage;
+
+
+public class PhoneBookView extends Application {
+
+	private TableView<Person> table = new TableView<Person>();
+	// for Filter
+	private ObservableList<Person> filteredList = FXCollections
+	        .observableArrayList();
+	
+	private final ObservableList<Person> data = FXCollections
+	        .observableArrayList(
+	        		new Person("Hans", "Meier", "123"), 
+	        		new Person("Kurt", "Schumacher", "456"),
+	        		new Person("Robert", "Kennedy")	
+	                );
+	final HBox hb1 = new HBox();
+	final HBox hb2 = new HBox();
+	
+	public static void main(String[] args) {
+	    launch(args);
+	}
+			
+	public void filterPerson(Person filteringPerson) {
+	    
+	    this.filteredList.clear();
+	    Iterator<Person> completeData = data.iterator();
+	    while (completeData.hasNext()) {
+	        Person person = (Person) completeData.next();
+	
+	        if (person.getFirstName().contains(filteringPerson.getFirstName()) 
+	        		&& person.getLastName().contains(filteringPerson.getLastName())) {
+	            this.filteredList.add(person);
+	        }
+	    }
+	    
+	}
+	
+	public void filterPhoneNumber(String phoneNumber) {
+		
+		this.filteredList.clear();
+	    Iterator<Person> completeData = data.iterator();
+	    while (completeData.hasNext()) {
+	        Person person = (Person) completeData.next();
+	
+	        if (person.getPhone().equals(phoneNumber)) {
+	            this.filteredList.add(person);
+	        }
+	    }
+		
+	}
+	
+	public void exportFilteredListIntoCSV() {
+		String directory = System.getProperty("user.home");
+		Path pathWithData = Paths.get(directory, "filteredData.csv");
+		try (BufferedWriter writeBuffer = Files.newBufferedWriter(pathWithData)) {
+			String headline = String.format("%s%n%n", "gefilterte Liste");
+			writeBuffer.write(headline);
+			String tableHeadline = String.format("%s;%s;%s%n", "Vorname", "Nachname", "Telefonnummer");
+			writeBuffer.write(tableHeadline);
+			for (int i = 0; i < this.filteredList.size(); i++) {
+				String line = String.format("%s;%s;%s%n", 
+						this.filteredList.get(i).getFirstName(), 
+						this.filteredList.get(i).getLastName(), 
+						this.filteredList.get(i).getPhone()
+						);
+				writeBuffer.write(line);
+			}
+		} catch (IOException e) {
+			System.out.printf(e.getMessage());
+		}
+	}
+	
+	@Override
+	public void start(Stage stage) {
+	    Scene scene = new Scene(new Group());
+	    stage.setTitle("Telefonbuch");
+	    stage.setWidth(335);
+	    stage.setHeight(570);
+	    stage.setResizable(false);
+	
+	    final Label label = new Label("Telefonbuch");
+	    label.setFont(new Font("Arial", 20));
+	
+	
+	    this.table.setEditable(false);
+	    TableColumn<Person, String> firstNameCol = new TableColumn<>("Vorname");
+	    firstNameCol.setMinWidth(100);
+	    firstNameCol.setCellValueFactory(new PropertyValueFactory<Person, String>("firstName"));
+	    
+	    
+	    firstNameCol.setCellFactory(TextFieldTableCell.forTableColumn());	    
+	    firstNameCol.setOnEditCommit(new EventHandler<CellEditEvent<Person, String>>() {
+	    	@Override
+	    	public void handle(CellEditEvent<Person, String> t) {
+	    		((Person) t.getTableView().getItems()
+	    				.get(t.getTablePosition().getRow()))
+	    				.setFirstName(t.getNewValue());
+	    	}
+	    });
+	
+	    TableColumn<Person, String> lastNameCol = new TableColumn<>("Nachname");
+	    lastNameCol.setMinWidth(100);
+	    lastNameCol.setCellValueFactory(new PropertyValueFactory<Person, String>("lastName"));
+	       
+	    lastNameCol.setCellFactory(TextFieldTableCell.forTableColumn());
+	    lastNameCol.setOnEditCommit(new EventHandler<CellEditEvent<Person, String>>() {
+	    	@Override
+	    		public void handle(CellEditEvent<Person, String> t) {
+	    			((Person) t.getTableView().getItems()
+	    					.get(t.getTablePosition().getRow()))
+	                        .setLastName(t.getNewValue());
+	    	}
+	    });
+	    
+	    TableColumn<Person, String> phoneNoCol = new TableColumn<>("Telefonnummer");
+	    phoneNoCol.setMinWidth(100);
+	    phoneNoCol.setCellValueFactory(new PropertyValueFactory<Person, String>("phone"));
+	    
+	    
+	    phoneNoCol.setCellFactory(TextFieldTableCell.forTableColumn());
+	    phoneNoCol.setOnEditCommit(new EventHandler<CellEditEvent<Person, String>>() {
+	    	@Override
+	    	public void handle(CellEditEvent<Person, String> t) {
+	    		((Person) t.getTableView().getItems()
+	    				.get(t.getTablePosition().getRow()))
+	                    .setPhone(t.getNewValue());
+	    	}
+	    });
+	
+	    this.table.setItems(filteredList);
+	    this.table.setEditable(true);
+	    
+	    this.filteredList.addAll(this.data);
+	    
+	    this.table.getColumns().add(firstNameCol);
+	    this.table.getColumns().add(lastNameCol);
+	    this.table.getColumns().add(phoneNoCol);
+	
+	    final TextField firstNameField = new TextField();
+	    firstNameField.setPromptText("Vorname");
+	    firstNameField.setMaxWidth(firstNameCol.getPrefWidth());
+
+	    final TextField lastNameField = new TextField();
+	    lastNameField.setPromptText("Nachname");
+	    lastNameField.setMaxWidth(firstNameCol.getPrefWidth());
+	
+	    final Button searchPhoneNumberButton = new Button("Telefonnummer suchen");
+	    searchPhoneNumberButton.setOnAction(new EventHandler<ActionEvent>() {
+	        @Override
+	        public void handle(ActionEvent e) {
+	        	Person personToSearch = new Person(firstNameField.getText(), lastNameField.getText());
+	        	filterPerson(personToSearch);
+	        }
+	    });
+	    
+	    final TextField phoneNumberField = new TextField();
+	    phoneNumberField.setPromptText("Telefonnummer");
+	    phoneNumberField.setMinWidth(firstNameCol.getPrefWidth() * 2.65);
+	    
+	    final Button searchPersonButton = new Button("Person suchen");
+	    searchPersonButton.setOnAction(new EventHandler<ActionEvent>() {
+	        @Override
+	        public void handle(ActionEvent e) {
+	        	String phoneNumberToSearch = new String(phoneNumberField.getText());
+	        	filterPhoneNumber(phoneNumberToSearch);
+	        }
+	    });
+	    
+	    final Button exportFilteredList = new Button("gefilterte Liste in ein csv-File exportieren");
+	    exportFilteredList.setMinWidth(firstNameCol.getPrefWidth() * 3.85);
+	    exportFilteredList.setOnAction(new EventHandler<ActionEvent>() {
+	    	@Override
+	    	public void handle(ActionEvent e) {
+	    		exportFilteredListIntoCSV();	
+	    	}
+	    });
+
+	    this.hb1.getChildren().addAll(firstNameField, lastNameField, searchPhoneNumberButton);
+	    this.hb1.setSpacing(3);
+	    
+	    this.hb2.getChildren().addAll(phoneNumberField, searchPersonButton);
+	    this.hb2.setSpacing(3);
+	
+	    final VBox vbox = new VBox();
+	    vbox.setSpacing(5);
+	    vbox.setPadding(new Insets(10, 0, 0, 10));
+	    vbox.getChildren().addAll(label, this.table, this.hb1, this.hb2, exportFilteredList);
+	
+	    ((Group) scene.getRoot()).getChildren().addAll(vbox);
+	
+	    stage.setScene(scene);
+	    stage.show();	    
+	}
+	
+}
