@@ -1,0 +1,84 @@
+package model;
+
+import javafx.beans.property.SimpleStringProperty;
+
+public class Person implements Comparable<Person> {
+	
+    private final SimpleStringProperty firstName;
+    private final SimpleStringProperty lastName;
+    private final SimpleStringProperty phone;
+    
+	public Person(String fName, String lName) {
+	    this.firstName = new SimpleStringProperty(fName);
+	    this.lastName = new SimpleStringProperty(lName);
+	    this.phone = new SimpleStringProperty("");
+	}
+
+	public Person(String fName, String lName, String phone) {
+	    this.firstName = new SimpleStringProperty(fName);
+	    this.lastName = new SimpleStringProperty(lName);
+	    this.phone = new SimpleStringProperty(phone);
+	}
+	
+	public String getFirstName() {
+	    return this.firstName.get();
+	}
+	
+	public void setFirstName(String fName) {
+		this.firstName.set(fName);
+	}
+	
+	public String getLastName() {
+	    return this.lastName.get();
+	}
+	
+	public void setLastName(String fName) {
+		this.lastName.set(fName);
+	}
+	
+	public String getPhone() {
+		return this.phone.get();
+	}
+	
+	public void setPhone(String phone) {
+		this.phone.set(phone);
+	}
+	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((this.firstName == null) ? 0 : this.firstName.hashCode());
+		result = prime * result + ((this.lastName == null) ? 0 : this.lastName.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+            return false;
+        }
+
+        if (obj.getClass() != this.getClass()) {
+            return false;
+        }
+
+        final Person other = (Person) obj;
+        
+        if ((this.firstName == null) ? (other.firstName != null) : !this.firstName.equals(other.firstName)) {
+            return false;
+        }
+
+        if ((this.lastName == null) ? (other.lastName != null) : !this.lastName.equals(other.lastName)) {
+            return false;
+        }
+
+        return true;
+	}
+
+	@Override
+    public int compareTo(Person o) {
+        return this.firstName.get().compareToIgnoreCase(o.getFirstName());
+    }
+
+}
